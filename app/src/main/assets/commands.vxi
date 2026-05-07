@@ -1,0 +1,49 @@
+{
+  "vxi_version": "2.0",
+  "app_display_name": "YouTube",
+  "commands": [
+    {
+      "title": "Search",
+      "action": "org.schabi.newpipe.VOX_SEARCH",
+      "triggerPhrases": [
+        "search (.*) on youtube",
+        "find (.*) on youtube",
+        "look up (.*) on youtube",
+        "search youtube for (.*)"
+      ],
+      "parameters": {
+        "1": {
+          "name": "org.schabi.newpipe.EXTRA_QUERY",
+          "type": "String",
+          "extract_hint": "remainder"
+        }
+      }
+    },
+    {
+      "title": "Play",
+      "action": "org.schabi.newpipe.VOX_PLAY",
+      "triggerPhrases": [
+        "play (.*) on youtube",
+        "listen to (.*) on youtube",
+        "watch (.*) on youtube"
+      ],
+      "parameters": {
+        "1": {
+          "name": "org.schabi.newpipe.EXTRA_QUERY",
+          "type": "String",
+          "extract_hint": "remainder"
+        }
+      }
+    },
+    {
+      "title": "Trending",
+      "action": "org.schabi.newpipe.VOX_TRENDING",
+      "triggerPhrases": [
+        "what is trending",
+        "show me popular videos",
+        "open trending"
+      ],
+      "parameters": {}
+    }
+  ]
+}

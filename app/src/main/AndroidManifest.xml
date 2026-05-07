@@ -452,5 +452,16 @@
             android:resource="@xml/automotive_app_desc" />
         <meta-data android:name="com.google.android.gms.car.notification.SmallIcon"
             android:resource="@mipmap/ic_launcher" />
+
+        <meta-data
+            android:name="com.kt.vox.VXI_CONFIG"
+            android:value="commands.vxi" />
+        <receiver android:name=".vox.VoxNewPipeReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="org.schabi.newpipe.VOX_SEARCH" />
+                <action android:name="org.schabi.newpipe.VOX_PLAY" />
+                <action android:name="org.schabi.newpipe.VOX_TRENDING" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

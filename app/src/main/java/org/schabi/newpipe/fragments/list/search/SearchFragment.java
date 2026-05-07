@@ -142,6 +142,7 @@ public class SearchFragment extends BaseListFragment<SearchInfo, ListExtractor.I
 
     @State
     boolean wasSearchFocused = false;
+    private boolean playImmediately = false;
 
     private final SparseArrayCompat<String> menuItemToFilterName = new SparseArrayCompat<>();
     private StreamingService service;
@@ -178,8 +179,14 @@ public class SearchFragment extends BaseListFragment<SearchInfo, ListExtractor.I
     private TextWatcher textWatcher;
 
     public static SearchFragment getInstance(final int serviceId, final String searchString) {
+        return getInstance(serviceId, searchString, false);
+    }
+
+    public static SearchFragment getInstance(final int serviceId, final String searchString,
+                                             final boolean playImmediately) {
         final SearchFragment searchFragment = new SearchFragment();
         searchFragment.setQuery(serviceId, searchString, new String[0], "");
+        searchFragment.playImmediately = playImmediately;
 
         if (!TextUtils.isEmpty(searchString)) {
             searchFragment.setSearchOnResume();
@@ -1063,6 +1070,10 @@ public class SearchFragment extends BaseListFragment<SearchInfo, ListExtractor.I
         if (infoListAdapter.getItemsList().isEmpty()) {
             if (!result.getRelatedItems().isEmpty()) {
                 infoListAdapter.addInfoItemList(result.getRelatedItems());
+                if (playImmediately) {
+                    playImmediately = false;
+                    onItemSelected(result.getRelatedItems().get(0));
+                }
             } else {
                 infoListAdapter.clearStreamItemList();
                 showEmptyState();

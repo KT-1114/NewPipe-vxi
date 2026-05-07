@@ -21,6 +21,7 @@
 package org.schabi.newpipe;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -95,6 +96,7 @@ import org.schabi.newpipe.util.SerializedCache;
 import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.StateSaver;
 import org.schabi.newpipe.util.ThemeHelper;
+import org.schabi.newpipe.vox.VoxNewPipeReceiver;
 import org.schabi.newpipe.util.external_communication.ShareUtils;
 import org.schabi.newpipe.views.FocusOverlayView;
 
@@ -764,7 +766,11 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "initFragments() called");
         }
         StateSaver.clearStateFiles();
-        if (getIntent() != null && getIntent().hasExtra(Constants.KEY_LINK_TYPE)) {
+        final Intent intent = getIntent();
+        if (intent != null && (intent.hasExtra(Constants.KEY_LINK_TYPE)
+                || intent.hasExtra(Constants.KEY_OPEN_SEARCH)
+                || Intent.ACTION_SEARCH.equals(intent.getAction())
+                || VoxNewPipeReceiver.ACTION_VOX_TRENDING.equals(intent.getAction()))) {
             // When user watch a video inside popup and then tries to open the video in main player
             // while the app is closed he will see a blank fragment on place of kiosk.
             // Let's open it first
@@ -772,7 +778,7 @@ public class MainActivity extends AppCompatActivity {
                 NavigationHelper.openMainFragment(getSupportFragmentManager());
             }
 
-            handleIntent(getIntent());
+            handleIntent(intent);
         } else {
             NavigationHelper.gotoMainFragment(getSupportFragmentManager());
         }
@@ -856,6 +862,20 @@ public class MainActivity extends AppCompatActivity {
                         serviceId,
                         searchString);
 
+            } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+                final String query = intent.getStringExtra(SearchManager.QUERY);
+                if (query != null && !query.isEmpty()) {
+                    final int serviceId = intent.getIntExtra(Constants.KEY_SERVICE_ID,
+                            ServiceHelper.getSelectedServiceId(this));
+                    final boolean playImmediately = intent.getBooleanExtra(
+                            VoxNewPipeReceiver.EXTRA_AUTO_PLAY, false);
+                    NavigationHelper.openSearchFragment(getSupportFragmentManager(),
+                            serviceId, query, playImmediately);
+                }
+            } else if (VoxNewPipeReceiver.ACTION_VOX_TRENDING.equals(intent.getAction())) {
+                final int serviceId = ServiceHelper.getSelectedServiceId(this);
+                NavigationHelper.openKioskFragment(getSupportFragmentManager(),
+                        serviceId, "Trending");
             } else {
                 NavigationHelper.gotoMainFragment(getSupportFragmentManager());
             }
